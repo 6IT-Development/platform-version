@@ -66,15 +66,10 @@ jobs:
           path: sbom.json
 
       - name: Commit and Push Changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Stage and commit the file
-          git add sbom.json
-          git commit -m "Update sbom before tag creation" || echo "No changes to commit"
-
-          # Push the changes
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update sbom before tag creation"
+          file_pattern: "sbom.json"
 
       - name: Run OSV-Scanner
         id: osvscanner
