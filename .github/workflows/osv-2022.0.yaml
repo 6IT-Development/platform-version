@@ -20,7 +20,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.1'
 
       - name: Install snapd
         run: sudo apt install snapd
@@ -67,9 +67,9 @@ jobs:
         id: osvscanner
         run: osv-scanner --sbom=sbom.json --output=osv-results.txt
 
-      - name: Upload SBOM as an artifact
+      - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: osv
+          name: osv-2022.0
           path: osv-results.txt
