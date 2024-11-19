@@ -65,7 +65,7 @@ jobs:
 
       - name: Run OSV-Scanner
         id: osvscanner
-        run: osv-scanner --sbom=sbom.json --output=osv-results.txt
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=osv-config.toml
 
       - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
