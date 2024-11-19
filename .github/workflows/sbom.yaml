@@ -1,4 +1,4 @@
-name: Generate SBOM and run OSV-Scanner
+name: Generate SBOM
 
 on:
   push:
