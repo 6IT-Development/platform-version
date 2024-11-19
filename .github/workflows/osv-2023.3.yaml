@@ -1,8 +1,6 @@
 name: Run OSV-Scanner on 2023.3
 
 on:
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -65,7 +63,7 @@ jobs:
 
       - name: Run OSV-Scanner
         id: osvscanner
-        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=osv-config.toml
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt
 
       - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}

@@ -1,8 +1,6 @@
 name: Run OSV-Scanner on 2022.0
 
 on:
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
