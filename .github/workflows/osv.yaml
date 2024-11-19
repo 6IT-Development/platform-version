@@ -29,6 +29,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get install jq
 
+      - name: Install OSV-Scanner
+        run : sudo snap install osv-scanner
+
       - name: Install SSH Key # this is necessary for Composer to be able to clone source from pimcore/ee-pimcore
         uses: shimataro/ssh-key-action@v2
         with:
@@ -61,8 +64,32 @@ jobs:
       - name: CREATE SBOM
         run: composer CycloneDX:make-sbom --output-file=sbom.json --output-format=json
 
+      - name: Upload SBOM as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update sbom."
+          commit_message: "Update sbom for tag."
           file_pattern: "sbom.json"
+
+      - name: Run OSV-Scanner
+        id: osvscanner
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt
+
+      - name: Create fail comment
+        uses: peter-evans/create-or-update-comment@v4
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: 'osv-results.txt'
+
+      - name: Upload SBOM as an artifact
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: osv
+          path: osv-results.txt
