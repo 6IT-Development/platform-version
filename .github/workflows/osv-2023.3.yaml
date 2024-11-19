@@ -1,8 +1,6 @@
 name: Run OSV-Scanner on 2023.3
 
 on:
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -71,5 +69,5 @@ jobs:
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: osv-2022.0
+          name: osv-2023.3
           path: osv-results.txt
