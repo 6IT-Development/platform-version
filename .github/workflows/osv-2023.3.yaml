@@ -15,6 +15,14 @@ jobs:
         with:
           ref: 'v2023.3'
 
+      - name: Checkout osv configuration
+        uses: actions/checkout@v4
+        with:
+          repository: pimcore/workflows-collection-public
+          sparse-checkout: |
+            osv/2023-3.toml
+          sparse-checkout-cone-mode: false
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -63,7 +71,7 @@ jobs:
 
       - name: Run OSV-Scanner
         id: osvscanner
-        run: osv-scanner --sbom=sbom.json --output=osv-results.txt
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=osv/2023-3.toml
 
       - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
