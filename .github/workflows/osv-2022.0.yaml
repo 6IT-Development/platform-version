@@ -21,7 +21,7 @@ jobs:
           repository: pimcore/workflows-collection-public
           path: tools
           sparse-checkout: |
-            osv/2023-3.toml
+            osv/2020-0.toml
           sparse-checkout-cone-mode: false
 
       - name: Set up PHP
