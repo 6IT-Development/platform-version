@@ -86,8 +86,7 @@ jobs:
         id: get_vulnerabilities
         run: |
           VULNERABILITIES_ENV=$(<osv-results.txt)
-          echo "File content: $VULNERABILITIES_ENV"
-          echo "::set-output name=vulnerabilities::$VULNERABILITIES_ENV"
+          echo "VULNERABILITIES_ENV=(echo "$VULNERABILITIES_ENV" | base64)" >> $GITHUB_ENV
 
       - name: Send results of checks to Microsoft Teams
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
@@ -103,7 +102,7 @@ jobs:
             **Vulnerabilities found:**
             ```
             
-            ${{ steps.get_vulnerabilities.outputs.vulnerabilities }}
+            ${{ env.VULNERABILITIES_ENV }} | base64 --decode
             
             ```
             If the list is too long, please refer to the link above.
