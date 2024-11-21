@@ -103,7 +103,7 @@ jobs:
             **Vulnerabilities found:**
             ```
             
-            ${{ steps.generate_output.outputs.vulnerabilities }}
+            ${{ steps.get_vulnerabilities.outputs.vulnerabilities }}
             
             ```
             If the list is too long, please refer to the link above.
