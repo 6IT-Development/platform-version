@@ -85,7 +85,7 @@ jobs:
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         id: get_vulnerabilities
         run: |
-          VULNERABILITIES_ENV=$(grep '^| ' osv-results.txt | cut -d'|' -f1,2,3,5,6)
+          VULNERABILITIES_ENV=$(grep '^| ' osv-results.txt | cut -d'|' -f1,2,5,6)
           echo "VULNERABILITIES_ENV<<EOF" >> $GITHUB_ENV
           echo "$VULNERABILITIES_ENV" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
