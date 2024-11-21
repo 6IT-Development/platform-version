@@ -85,12 +85,9 @@ jobs:
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         id: get_vulnerabilities
         run: |
-          VULNERABILITIES_ENV=$(<osv-results.txt | awk '{printf "%s\\n", $0}')
+          VULNERABILITIES_ENV=$(<osv-results.txt)
           echo "File content: $VULNERABILITIES_ENV"
-          echo "VULNERABILITIES_ENV<<EOF" >> $GITHUB_ENV
-          echo "$VULNERABILITIES_ENV" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
+          echo "::set-output name=vulnerabilities::$VULNERABILITIES_ENV"
 
       - name: Send results of checks to Microsoft Teams
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
@@ -106,7 +103,7 @@ jobs:
             **Vulnerabilities found:**
             ```
             
-            ${{ env.VULNERABILITIES_ENV }}
+            ${{ steps.generate_output.outputs.vulnerabilities }}
             
             ```
             If the list is too long, please refer to the link above.
