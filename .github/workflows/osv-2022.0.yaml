@@ -80,3 +80,25 @@ jobs:
         with:
           name: osv-2022.0
           path: osv-results.txt
+
+      - name: Get new vulnerabilities
+        id: get_vulnerabilities
+        run: |
+          VULNERABILITIES_ENV=$(cat osv-results.txt)
+          echo "VULNERABILITIES_ENV=$VULNERABILITIES_ENV" >> $GITHUB_ENV
+
+      - name: Send results of checks to Microsoft Teams
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
+        uses: aliencube/microsoft-teams-actions@v0.8.0
+        with:
+          webhook_uri: ${{ secrets.TEAMS_COMPOSER_VULNERABILITY_URI }}
+          title: ${{ github.repository }}@${{ inputs.branch }} outdated - vulnerabilities report
+          summary: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
+          text: |
+            Please check the following link for details: 
+            ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
+            **Vulnerabilities found:**
+            ```
+            ${{ env.VULNERABILITIES_ENV }}
+            ```
+            If the list is too long, please refer to the link above.
