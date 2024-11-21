@@ -72,7 +72,7 @@ jobs:
 
       - name: Run OSV-Scanner
         id: osvscanner
-        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=tools/osv/2020-0.toml
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=tools/osv/2020-0.toml --format markdown
 
       - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
@@ -85,8 +85,8 @@ jobs:
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         id: get_vulnerabilities
         run: |
-          VULNERABILITIES_ENV=$(<osv-results.txt)
-          echo "VULNERABILITIES_ENV=(echo "$VULNERABILITIES_ENV" | base64)" >> $GITHUB_ENV
+          VULNERABILITIES_ENV=$(base64 <osv-results.txt)
+          echo "VULNERABILITIES_ENV=$VULNERABILITIES_ENV" >> $GITHUB_ENV
 
       - name: Send results of checks to Microsoft Teams
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
