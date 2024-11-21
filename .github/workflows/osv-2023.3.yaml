@@ -1,6 +1,8 @@
 name: Run OSV-Scanner on 2023.3
 
 on:
+  schedule:
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,6 +16,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: 'v2023.3'
+
+      - name: Checkout osv configuration
+        uses: actions/checkout@v4
+        with:
+          repository: pimcore/workflows-collection-public
+          path: tools
+          sparse-checkout: |
+            osv/2023-3.toml
+          sparse-checkout-cone-mode: false
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -63,7 +74,7 @@ jobs:
 
       - name: Run OSV-Scanner
         id: osvscanner
-        run: osv-scanner --sbom=sbom.json --output=osv-results.txt
+        run: osv-scanner --sbom=sbom.json --output=osv-results.txt --config=tools/osv/2023-3.toml
 
       - name: Upload SBOM as an artifact on failure
         if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
@@ -71,3 +82,31 @@ jobs:
         with:
           name: osv-2023.3
           path: osv-results.txt
+
+      - name: Get new vulnerabilities
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
+        id: get_vulnerabilities
+        run: |
+          VULNERABILITIES_ENV=$(grep '^| ' osv-results.txt | cut -d'|' -f2,5,6)
+          echo "VULNERABILITIES_ENV<<EOF" >> $GITHUB_ENV
+          echo "$VULNERABILITIES_ENV" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Send results of checks to Microsoft Teams
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
+        uses: aliencube/microsoft-teams-actions@v0.8.0
+        with:
+          webhook_uri: ${{ secrets.TEAMS_COMPOSER_VULNERABILITY_URI }}
+          title: ${{ github.repository }} - 2023.3 vulnerabilities report
+          summary: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
+          text: |
+            Please check the following link for details: 
+            ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
+
+            **Vulnerabilities found:**
+            ```
+
+            ${{ env.VULNERABILITIES_ENV }}
+
+            ```
+            If the list is too long, please refer to the link above.
