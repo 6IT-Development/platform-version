@@ -82,6 +82,7 @@ jobs:
           path: osv-results.txt
 
       - name: Get new vulnerabilities
+        if: ${{ failure() && steps.osvscanner.conclusion == 'failure' }}
         id: get_vulnerabilities
         run: |
           VULNERABILITIES_ENV=$(cat osv-results.txt)
