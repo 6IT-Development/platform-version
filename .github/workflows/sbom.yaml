@@ -1,11 +1,6 @@
 name: Generate SBOM
 
 on:
-  push:
-    tags-ignore:
-      - "*"
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
