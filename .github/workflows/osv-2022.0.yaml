@@ -49,12 +49,6 @@ jobs:
           composer config repositories.private-packagist composer https://repo.pimcore.com/github-actions/
           composer config --global --auth http-basic.repo.pimcore.com github-actions ${{ secrets.COMPOSER_PIMCORE_REPO_PACKAGIST_TOKEN }}
 
-      - name: Allow SBOM Plugin
-        run: composer config --no-plugins allow-plugins.cyclonedx/cyclonedx-php-composer true
-
-      - name: Install SBOM Plugin
-        run: composer require cyclonedx/cyclonedx-php-composer
-
       - name: Read and modify composer.json
         id: update_composer
         run: |
@@ -64,8 +58,14 @@ jobs:
               echo ${conflict} | base64 --decode | jq -r ${1}
             }
             package_name=$(_jq '.key')
-            composer require "$package_name:*" --no-install
+            composer require "$package_name:*" --no-update
           done
+
+      - name: Allow SBOM Plugin
+        run: composer config --no-plugins allow-plugins.cyclonedx/cyclonedx-php-composer true
+
+      - name: Install SBOM Plugin
+        run: composer require cyclonedx/cyclonedx-php-composer
 
       - name: CREATE SBOM
         run: composer CycloneDX:make-sbom --output-file=sbom.json --output-format=json
