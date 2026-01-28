@@ -1,7 +1,7 @@
 {
   "name": "six-it/platform-version",
   "type": "library",
-  "description": "Verified Pimcore Version",
+  "description": "Verified SIX-IT Pimcore Version",
   "license": "GPL-3.0-or-later",
   "require": {
     "php": "~8.2.0 || ~8.3.0"
