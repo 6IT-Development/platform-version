@@ -9,6 +9,7 @@
   "conflict": {
     "six-it/admin-ui-classic-bundle": "<1.0 || > 1.0.99",
     "six-it/google-marketing-bundle": "<1.0 || > 1.0.99",
+    "pimcore/newsletter-bundle": "<1.0 || > 1.0.99",
     "six-it/perspective-editor": "<1.0 || > 1.0.99",
     "six-it/pimcore-source": "<1.0 || > 1.0.99",
     "six-it/quill-bundle": "<1.0 || > 1.0.99"
